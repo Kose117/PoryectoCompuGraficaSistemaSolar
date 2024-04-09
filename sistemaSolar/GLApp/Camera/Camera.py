@@ -28,7 +28,7 @@ class Camera:
         self.program_id = program_id
         self.transformation = identity_mat()
         self.last_mouse = pygame.math.Vector2(0, 0)
-        self.mouse_sensitivity = [0.01, 0.01]
+        self.mouse_sensitivity = [0.02, 0.02]
         self.key_sensitivity = 0.005
         self.projection_matrix = perspective_mat(60, width / height, 0.01, 10000)
         self.projection = Uniform("mat4", self.projection_matrix)
@@ -46,20 +46,27 @@ class Camera:
         mouse_pos = pygame.mouse.get_pos()
         mouse_change = self.last_mouse - pygame.math.Vector2(mouse_pos)
         pygame.mouse.set_pos((self.screen_width / 2, self.screen_height / 2))
-        self.last_mouse = pygame.mouse.get_pos()
+        self.last_mouse = pygame.math.Vector2(pygame.mouse.get_pos())
         self.rotate(mouse_change.x * self.mouse_sensitivity[0], mouse_change.y * self.mouse_sensitivity[1])
 
         keys = pygame.key.get_pressed()
-        if keys[pygame.K_DOWN]:
+        if keys[pygame.K_s]:
             self.transformation = translate(self.transformation, 0, 0, self.key_sensitivity)
-        if keys[pygame.K_UP]:
+        if keys[pygame.K_w]:
             self.transformation = translate(self.transformation, 0, 0, -self.key_sensitivity)
-        if keys[pygame.K_RIGHT]:
+        if keys[pygame.K_d]:
             self.transformation = translate(self.transformation, self.key_sensitivity, 0, 0)
-        if keys[pygame.K_LEFT]:
+        if keys[pygame.K_a]:
             self.transformation = translate(self.transformation, -self.key_sensitivity, 0, 0)
+        if keys[pygame.K_SPACE]:
+            # Movimiento vertical hacia arriba
+            self.transformation = translate(self.transformation, 0, self.key_sensitivity, 0)
+        if keys[pygame.K_LSHIFT]:
+            # Movimiento vertical hacia abajo
+            self.transformation = translate(self.transformation, 0, -self.key_sensitivity, 0)
 
         self.projection.load()
         lookat = Uniform("mat4", self.transformation)
         lookat.find_variable(self.program_id, "viewMatrix")
         lookat.load()
+

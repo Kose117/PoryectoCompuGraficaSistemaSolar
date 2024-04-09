@@ -11,11 +11,15 @@ class BaseScene:
     def __init__(self, screen_width, screen_height):
         os.environ["SDL_VIDEO_CENTERED"] = '1'
         pygame.init()
+        info = pygame.display.Info()
+        display = [info.current_w, info.current_h]
+
+
         # antialiasing
         pygame.display.gl_set_attribute(pygame.GL_MULTISAMPLEBUFFERS, 1)
         pygame.display.gl_set_attribute(pygame.GL_MULTISAMPLESAMPLES, 4)
         pygame.display.gl_set_attribute(pygame.GL_CONTEXT_PROFILE_MASK, pygame.GL_CONTEXT_PROFILE_CORE)
-        self.screen = pygame.display.set_mode([screen_width, screen_height], DOUBLEBUF | OPENGL)
+        self.screen = pygame.display.set_mode(display, DOUBLEBUF | OPENGL | pygame.FULLSCREEN)
         pygame.display.set_caption("PyOpenGLApp")
         self.camera = None
 
@@ -39,6 +43,7 @@ class BaseScene:
                     run = False
                 if event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
                     run = False
+
             self.camera_init()
             self.display()
             pygame.display.flip()
@@ -46,6 +51,7 @@ class BaseScene:
 
     @staticmethod
     def draw_world_axes():
+
         glLineWidth(4)
         glBegin(GL_LINES)
         glColor(1, 0, 0)
