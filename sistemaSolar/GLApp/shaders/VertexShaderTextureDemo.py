@@ -105,6 +105,7 @@ class VertexShaderCameraDemo(BaseScene):
 
     def __init__(self):
         super().__init__(1600, 800)
+        self.ship = None
         self.stars = None
         self.vao_axes = None
         self.vbo_axes = None
@@ -116,17 +117,17 @@ class VertexShaderCameraDemo(BaseScene):
         self.valor = 0.0
 
         self.rotation_speeds = {
-            "mercury": 4.0,  # Valores de ejemplo, ajusta según necesites
-            "venus": 3.0,
-            "earth": 5.0,
-            "mars": 3.5,
-            "jupiter": 2.0,
-            "saturn": 1.5,
-            "uranus": 1.0,
-            "neptune": 0.8,
-            "sun": 0.0
-            # Añade velocidades para los demás planetas aquí...
+            "mercury": 0.017,  # Ajustado y dividido por 5
+            "venus": 0.0042,  # Ajustado y dividido por 5
+            "earth": 1.0,  # Dividido por 5
+            "mars": 0.9756,  # Ajustado y dividido por 5
+            "jupiter": 2.4242,  # Ajustado y dividido por 5
+            "saturn": 2.243,  # Ajustado y dividido por 5
+            "uranus": 1.3954,  # Ajustado y dividido por 5
+            "neptune": 1.4906,  # Ajustado y dividido por 5
+            "sun": 0.0  # Generalmente no modelamos la rotación del sol en estas simulaciones
         }
+
         self.rotation_angles = {planet: 0.0 for planet in self.rotation_speeds}  # Inicializar ángulos a 0
 
     def initialize_axes(self):
@@ -232,6 +233,13 @@ class VertexShaderCameraDemo(BaseScene):
             "../../assets/models/modeloPlaneta.obj",
             "../../assets/textures/estrellas.jpg"
         )
+        # nave
+        #self.ship = ObjTextureMesh(
+            #self.program_id,
+            #"../../assets/models/Fighter_01.obj",
+
+            #"../../assets/textures/hull.jpg"
+        #)
 
     def draw_planet(self, planet_name, transformation):
         self.planets[planet_name].draw(transformation)
@@ -242,7 +250,7 @@ class VertexShaderCameraDemo(BaseScene):
         self.camera.update()
 
         # Incrementar el ángulo de rotación para simular la órbita
-        self.valor += 0.0001  # Hacer que los planetas vayan más lentos
+        self.valor += 0.0000  # Hacer que los planetas vayan más lentos
 
         # Calcular la posición del sol (ejemplo simplificado)
         sun_position = np.array([0, 0, 0])  # Aquí puedes ajustar la posición real del sol si es necesario
@@ -283,6 +291,12 @@ class VertexShaderCameraDemo(BaseScene):
             transformation_stars = scale(transformation_stars, 2500, 2500, 2500)
             transformation_stars = translate(transformation_stars, 0, 0, 0)
             self.stars.draw(transformation_stars)
+
+            # Dibuja nave
+            transformation_ship = identity_mat()
+            transformation_ship = scale(transformation_ship, 50, 50, 50)
+            transformation_ship = translate(transformation_ship, 0, 0, 0)
+            #self.ship.draw(transformation_ship)
 
             planet_transformation = scale(transformation, data.scale, data.scale, data.scale)
             self.draw_planet(planet_name, planet_transformation)
