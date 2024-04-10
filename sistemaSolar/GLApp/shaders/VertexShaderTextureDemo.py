@@ -1,3 +1,4 @@
+# Importaciones y configuración inicial
 import numpy as np
 from OpenGL.GL import *
 from sistemaSolar.GLApp.BaseApps.BaseScene import BaseScene
@@ -6,6 +7,7 @@ from sistemaSolar.GLApp.Mesh.Light.ObjTextureMesh import ObjTextureMesh
 from sistemaSolar.GLApp.Transformations.Transformations import identity_mat, scale, translate
 from sistemaSolar.GLApp.Utils.Utils import create_program
 
+# Actualización del shader para usar la posición del sol
 vertex_shader = r'''
 #version 330 core
 
@@ -17,6 +19,7 @@ in vec2 vertexUv;
 uniform mat4 projectionMatrix;
 uniform mat4 modelMatrix;
 uniform mat4 viewMatrix;
+uniform vec3 sunPosition; // Posición del sol como variable uniforme
 
 out vec3 color;
 out vec3 normal;
@@ -24,11 +27,9 @@ out vec3 fragPos;
 out vec3 lightPos;
 out vec3 viewPos;
 out vec2 uv;
-
 void main()
 {
-    lightPos = vec3(0, 0, 0);  // Sun's position at the center
-    
+    lightPos = sunPosition; // Usar la posición del sol para la iluminación
     viewPos = vec3(inverse(modelMatrix) * vec4(viewMatrix[3][0], viewMatrix[3][1], viewMatrix[3][2], 1));
     gl_Position = projectionMatrix * inverse(viewMatrix) * modelMatrix * vec4(position, 1);
     normal = mat3(transpose(inverse(modelMatrix))) * vertexNormal;
@@ -55,35 +56,26 @@ out vec4 fragColor;
 void main(){
 
     vec3 lightColor = vec3(1, 1, 1);
-    
 
-    // Ambient
-    float a_strength = 0.3;
+    //ambient
+    float a_strength = 0.5;
     vec3 ambient = a_strength * lightColor;
 
-    // Diffuse
+    //diffuse
     vec3 norm = normalize(normal);
     vec3 lightDirection = normalize(lightPos - fragPos);
     float diff = max(dot(norm, lightDirection), 0);
     vec3 diffuse = diff * lightColor;
 
-    // Specular
+    //specular
     float s_strength = 0.8;
     vec3 viewDir = normalize(viewPos - fragPos);
     vec3 reflectDir = normalize(-lightDirection - norm);
     float spec = pow(max(dot(viewDir, reflectDir), 0), 32);
     vec3 specular = s_strength * spec * lightColor;
 
-    // Add shine to the sun
-    if (length(fragPos - lightPos) < 0.1) {
-        fragColor = vec4(1.0, 1.0, 0.0, 1.0); // Yellow color
-        return;
-    }
-
     fragColor = vec4(color * (ambient + diffuse + specular), 1);
     fragColor = fragColor * texture(tex, uv);
-    
-
 }
 '''
 
@@ -137,55 +129,30 @@ class VertexShaderCameraDemo(BaseScene):
         glDrawArrays(GL_LINES, 0, 6)
         glBindVertexArray(0)
 
-    def initialize_orbits(self, radii):
-        orbits = []
-        for radius in radii:
-            orbit_vertices = []
-            for i in range(360):
-                angle = np.radians(i)
-                x = np.cos(angle) * radius
-                z = np.sin(angle) * radius
-                y = 0  # Mantener en el plano horizontal
-                orbit_vertices.extend([x, y, z])
-            orbits.append(orbit_vertices)
-
-        self.vao_orbits = glGenVertexArrays(len(orbits))
-        self.vbo_orbits = glGenBuffers(len(orbits))
-
-        for i, orbit in enumerate(orbits):
-            glBindVertexArray(self.vao_orbits[i])
-            glBindBuffer(GL_ARRAY_BUFFER, self.vbo_orbits[i])
-            glBufferData(GL_ARRAY_BUFFER, np.array(orbit, dtype=np.float32), GL_STATIC_DRAW)
-            glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GLfloat), None)
-            glEnableVertexAttribArray(0)
-
-    def draw_orbits(self):
-        glLineWidth(2.0)
-        glColor3f(1.0, 1.0, 1.0)
-        for i in range(len(self.planets)):
-            glBindVertexArray(self.vao_orbits[i])
-            glDrawArrays(GL_LINE_LOOP, 0, 360)
-        glBindVertexArray(0)
-
     def initialize(self):
         self.program_id = create_program(vertex_shader, fragment_shader)
         self.initialize_axes()
         self.initialize_planets()
         orbit_radii = [planet.orbit_radius for planet in self.planets.values()]
-        self.initialize_orbits(orbit_radii)
+
         self.camera = Camera(self.program_id, self.screen.get_width(), self.screen.get_height())
         glEnable(GL_DEPTH_TEST)
 
     def initialize_planets(self):
         planets_data = {
-            "mercury": {"scale": 0.076, "texture_path": "../../assets/textures/planetaMercurio.jpg", "orbit_radius": 10},
-            "venus": {"scale": 0.19, "texture_path": "../../assets/textures/planetaVenus.jpg", "orbit_radius": 20},
-            "earth": {"scale": 0.2, "texture_path": "../../assets/textures/planetaTierra.jpg", "orbit_radius": 30},
-            "mars": {"scale": 0.106, "texture_path": "../../assets/textures/planetaMarte.jpg", "orbit_radius": 40},
-            "jupiter": {"scale": 2.194, "texture_path": "../../assets/textures/planetaJupiter.jpg", "orbit_radius": 50},
-            "saturn": {"scale": 1.828, "texture_path": "../../assets/textures/planetaSaturno.jpg", "orbit_radius": 60},
-            "uranus": {"scale": 0.796, "texture_path": "../../assets/textures/planetaUrano.jpg", "orbit_radius": 70},
-            "neptune": {"scale": 0.772, "texture_path": "../../assets/textures/planetaNeptuno.jpg", "orbit_radius": 80},
+            "mercury": {"scale": 0.076, "texture_path": "../../assets/textures/planetaMercurio.jpg",
+                        "orbit_radius": 46.0},
+            "venus": {"scale": 0.19, "texture_path": "../../assets/textures/planetaVenus.jpg", "orbit_radius": 107.0},
+            "earth": {"scale": 0.2, "texture_path": "../../assets/textures/planetaTierra.jpg", "orbit_radius": 147.0},
+            "mars": {"scale": 0.106, "texture_path": "../../assets/textures/planetaMarte.jpg", "orbit_radius": 205.0},
+            "jupiter": {"scale": 2.194, "texture_path": "../../assets/textures/planetaJupiter.jpg",
+                        "orbit_radius": 370.5},
+            "saturn": {"scale": 1.828, "texture_path": "../../assets/textures/planetaSaturno.jpg",
+                       "orbit_radius": 677.0},
+            "uranus": {"scale": 0.796, "texture_path": "../../assets/textures/planetaUrano.jpg",
+                       "orbit_radius": 1374.0},
+            "neptune": {"scale": 0.772, "texture_path": "../../assets/textures/planetaNeptuno.jpg",
+                        "orbit_radius": 2366.4},
             "sun": {"scale": 21.84, "texture_path": "../../assets/textures/sol.jpg", "orbit_radius": 0},
         }
 
@@ -216,9 +183,15 @@ class VertexShaderCameraDemo(BaseScene):
         # Incrementar el ángulo de rotación para simular la órbita
         self.valor += 0.0001  # Hacer que los planetas vayan más lentos
 
+        # Calcular la posición del sol (ejemplo simplificado)
+        sun_position = np.array([0, 0, 0])  # Aquí puedes ajustar la posición real del sol si es necesario
+
+        # Pasar la posición del sol al shader
+        sun_pos_location = glGetUniformLocation(self.program_id, 'sunPosition')
+        glUniform3f(sun_pos_location, *sun_position)
+
         # Dibujar ejes mundiales y órbitas
         self.draw_world_axes()
-        self.draw_orbits()
 
         # Dibujar planetas
         for planet_name, data in self.planets.items():
@@ -232,15 +205,12 @@ class VertexShaderCameraDemo(BaseScene):
 
             # Dibuja estrellas
             transformation_stars = identity_mat()
-            transformation_stars = scale(transformation_stars, 160, 160, 160)
+            transformation_stars = scale(transformation_stars, 2500, 2500, 2500)
             transformation_stars = translate(transformation_stars, 0, 0, 0)
             self.stars.draw(transformation_stars)
 
-            if planet_name != "sun":
-                planet_transformation = scale(transformation, data.scale, data.scale, data.scale)
-                self.draw_planet(planet_name, planet_transformation)
-            else:
-                self.draw_planet(planet_name, transformation)
+            planet_transformation = scale(transformation, data.scale, data.scale, data.scale)
+            self.draw_planet(planet_name, planet_transformation)
 
 
 if __name__ == '__main__':
