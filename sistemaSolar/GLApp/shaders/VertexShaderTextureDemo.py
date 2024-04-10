@@ -4,7 +4,7 @@ from OpenGL.GL import *
 from sistemaSolar.GLApp.BaseApps.BaseScene import BaseScene
 from sistemaSolar.GLApp.Camera.Camera import Camera
 from sistemaSolar.GLApp.Mesh.Light.ObjTextureMesh import ObjTextureMesh
-from sistemaSolar.GLApp.Transformations.Transformations import identity_mat, scale, translate
+from sistemaSolar.GLApp.Transformations.Transformations import identity_mat, scale, translate, rotate
 from sistemaSolar.GLApp.Utils.Utils import create_program
 
 # Actualización del shader para usar la posición del sol
@@ -80,6 +80,27 @@ void main(){
 '''
 
 
+simple_vertex_shader = '''
+#version 330 core
+layout (location = 0) in vec3 position;
+
+uniform mat4 projectionViewMatrix;
+
+void main() {
+    gl_Position = projectionViewMatrix * vec4(position, 1.0);
+}
+'''
+
+simple_fragment_shader = '''
+#version 330 core
+out vec4 FragColor;
+
+void main() {
+    FragColor = vec4(1.0, 1.0, 1.0, 1.0); // Blanco
+}
+'''
+
+
 class VertexShaderCameraDemo(BaseScene):
 
     def __init__(self):
@@ -90,8 +111,23 @@ class VertexShaderCameraDemo(BaseScene):
         self.vao_orbits = None
         self.vbo_orbits = None
         self.program_id = None
+        self.simple_shader_program = None
         self.planets = {}
         self.valor = 0.0
+
+        self.rotation_speeds = {
+            "mercury": 4.0,  # Valores de ejemplo, ajusta según necesites
+            "venus": 3.0,
+            "earth": 5.0,
+            "mars": 3.5,
+            "jupiter": 2.0,
+            "saturn": 1.5,
+            "uranus": 1.0,
+            "neptune": 0.8,
+            "sun": 0.0
+            # Añade velocidades para los demás planetas aquí...
+        }
+        self.rotation_angles = {planet: 0.0 for planet in self.rotation_speeds}  # Inicializar ángulos a 0
 
     def initialize_axes(self):
         # Coordinates of the axes with colors
@@ -124,13 +160,38 @@ class VertexShaderCameraDemo(BaseScene):
         glBindBuffer(GL_ARRAY_BUFFER, 0)
         glBindVertexArray(0)
 
+    @staticmethod
+    def create_simple_shader_program():
+        vertex_shader = glCreateShader(GL_VERTEX_SHADER)
+        glShaderSource(vertex_shader, simple_vertex_shader)
+        glCompileShader(vertex_shader)
+        # Aquí deberías verificar si la compilación fue exitosa
+
+        fragment_shader = glCreateShader(GL_FRAGMENT_SHADER)
+        glShaderSource(fragment_shader, simple_fragment_shader)
+        glCompileShader(fragment_shader)
+        # Verificar también la compilación del fragment shader
+
+        shader_program = glCreateProgram()
+        glAttachShader(shader_program, vertex_shader)
+        glAttachShader(shader_program, fragment_shader)
+        glLinkProgram(shader_program)
+        # Verificar el enlace del programa
+
+        glDeleteShader(vertex_shader)
+        glDeleteShader(fragment_shader)
+
+        return shader_program
+
     def draw_world_axes(self):
         glBindVertexArray(self.vao_axes)
         glDrawArrays(GL_LINES, 0, 6)
         glBindVertexArray(0)
 
+
     def initialize(self):
         self.program_id = create_program(vertex_shader, fragment_shader)
+        self.simple_shader_program = self.create_simple_shader_program()
         self.initialize_axes()
         self.initialize_planets()
         orbit_radii = [planet.orbit_radius for planet in self.planets.values()]
@@ -195,13 +256,27 @@ class VertexShaderCameraDemo(BaseScene):
 
         # Dibujar planetas
         for planet_name, data in self.planets.items():
+            planet = self.planets[planet_name]
+            # Rotación sobre su propio eje
+            self.rotation_angles[planet_name] += self.rotation_speeds[planet_name]
+            self.rotation_angles[planet_name] %= 360  # Mantener el ángulo dentro de 0-360 grados
+
+            # Preparar la transformación inicial
             transformation = identity_mat()
-            orbit_radius = data.orbit_radius
-            # Calcular la posición en la órbita (en el plano XZ)
+
+            # Aplicar la traslación para mover el planeta a su posición orbital
+            orbit_radius = planet.orbit_radius
             x = orbit_radius * np.cos(self.valor)
-            y = 0  # Mantener en el plano horizontal
+            y = 0
             z = orbit_radius * np.sin(self.valor)
             transformation = translate(transformation, x, y, z)
+
+            # Aplicar la rotación sobre su propio eje
+            axial_angle = self.rotation_angles[planet_name]
+            transformation = rotate(transformation, axial_angle, 'y')  # Ajusta el eje si es necesario
+
+            # Escalar según el tamaño del planeta
+            planet_scale = planet.scale
 
             # Dibuja estrellas
             transformation_stars = identity_mat()
@@ -211,6 +286,8 @@ class VertexShaderCameraDemo(BaseScene):
 
             planet_transformation = scale(transformation, data.scale, data.scale, data.scale)
             self.draw_planet(planet_name, planet_transformation)
+
+        glUseProgram(self.program_id)
 
 
 if __name__ == '__main__':

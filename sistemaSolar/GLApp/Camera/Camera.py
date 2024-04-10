@@ -70,3 +70,8 @@ class Camera:
         lookat.find_variable(self.program_id, "viewMatrix")
         lookat.load()
 
+    def get_projection_matrix(self):
+        return self.projection_matrix
+
+    def get_view_matrix(self):
+        return self.transformation
