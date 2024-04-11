@@ -105,6 +105,7 @@ class VertexShaderCameraDemo(BaseScene):
 
     def __init__(self):
         super().__init__(1600, 800)
+        self.deathStar = None
         self.ship = None
         self.stars = None
         self.vao_axes = None
@@ -117,15 +118,15 @@ class VertexShaderCameraDemo(BaseScene):
         self.valor = 0.0
 
         self.rotation_speeds = {
-            "mercury": 0.017,  # Ajustado y dividido por 5
-            "venus": 0.0042,  # Ajustado y dividido por 5
-            "earth": 1.0,  # Dividido por 5
-            "mars": 0.9756,  # Ajustado y dividido por 5
-            "jupiter": 2.4242,  # Ajustado y dividido por 5
-            "saturn": 2.243,  # Ajustado y dividido por 5
-            "uranus": 1.3954,  # Ajustado y dividido por 5
-            "neptune": 1.4906,  # Ajustado y dividido por 5
-            "sun": 0.0  # Generalmente no modelamos la rotación del sol en estas simulaciones
+            "mercury": 0.017,
+            "venus": 0.0042,
+            "earth": 1.0,
+            "mars": 0.9756,
+            "jupiter": 2.4242,
+            "saturn": 2.243,
+            "uranus": 1.3954,
+            "neptune": 1.4906,
+            "sun": 0.0
         }
 
         self.rotation_angles = {planet: 0.0 for planet in self.rotation_speeds}  # Inicializar ángulos a 0
@@ -161,29 +162,6 @@ class VertexShaderCameraDemo(BaseScene):
         glBindBuffer(GL_ARRAY_BUFFER, 0)
         glBindVertexArray(0)
 
-    @staticmethod
-    def create_simple_shader_program():
-        vertex_shader = glCreateShader(GL_VERTEX_SHADER)
-        glShaderSource(vertex_shader, simple_vertex_shader)
-        glCompileShader(vertex_shader)
-        # Aquí deberías verificar si la compilación fue exitosa
-
-        fragment_shader = glCreateShader(GL_FRAGMENT_SHADER)
-        glShaderSource(fragment_shader, simple_fragment_shader)
-        glCompileShader(fragment_shader)
-        # Verificar también la compilación del fragment shader
-
-        shader_program = glCreateProgram()
-        glAttachShader(shader_program, vertex_shader)
-        glAttachShader(shader_program, fragment_shader)
-        glLinkProgram(shader_program)
-        # Verificar el enlace del programa
-
-        glDeleteShader(vertex_shader)
-        glDeleteShader(fragment_shader)
-
-        return shader_program
-
     def draw_world_axes(self):
         glBindVertexArray(self.vao_axes)
         glDrawArrays(GL_LINES, 0, 6)
@@ -192,30 +170,24 @@ class VertexShaderCameraDemo(BaseScene):
 
     def initialize(self):
         self.program_id = create_program(vertex_shader, fragment_shader)
-        self.simple_shader_program = self.create_simple_shader_program()
+
         self.initialize_axes()
         self.initialize_planets()
-        orbit_radii = [planet.orbit_radius for planet in self.planets.values()]
 
         self.camera = Camera(self.program_id, self.screen.get_width(), self.screen.get_height())
         glEnable(GL_DEPTH_TEST)
 
     def initialize_planets(self):
         planets_data = {
-            "mercury": {"scale": 0.076, "texture_path": "../../assets/textures/planetaMercurio.jpg",
-                        "orbit_radius": 46.0},
-            "venus": {"scale": 0.19, "texture_path": "../../assets/textures/planetaVenus.jpg", "orbit_radius": 107.0},
-            "earth": {"scale": 0.2, "texture_path": "../../assets/textures/planetaTierra.jpg", "orbit_radius": 147.0},
-            "mars": {"scale": 0.106, "texture_path": "../../assets/textures/planetaMarte.jpg", "orbit_radius": 205.0},
-            "jupiter": {"scale": 2.194, "texture_path": "../../assets/textures/planetaJupiter.jpg",
-                        "orbit_radius": 370.5},
-            "saturn": {"scale": 1.828, "texture_path": "../../assets/textures/planetaSaturno.jpg",
-                       "orbit_radius": 677.0},
-            "uranus": {"scale": 0.796, "texture_path": "../../assets/textures/planetaUrano.jpg",
-                       "orbit_radius": 1374.0},
-            "neptune": {"scale": 0.772, "texture_path": "../../assets/textures/planetaNeptuno.jpg",
-                        "orbit_radius": 2366.4},
-            "sun": {"scale": 21.84, "texture_path": "../../assets/textures/sol.jpg", "orbit_radius": 0},
+          "sun": {"scale": 0.5, "texture_path": "../../assets/textures/sol.jpg", "orbit_radius": 0},
+          "mercury": {"scale": 0.00174, "texture_path": "../../assets/textures/planetaMercurio.jpg", "orbit_radius": 1.053},
+          "venus": {"scale": 0.00435, "texture_path": "../../assets/textures/planetaVenus.jpg", "orbit_radius": 2.45},
+          "earth": {"scale": 0.00458, "texture_path": "../../assets/textures/planetaTierra.jpg", "orbit_radius": 3.365},
+          "mars": {"scale": 0.00243, "texture_path": "../../assets/textures/planetaMarte.jpg", "orbit_radius": 4.693},
+          "jupiter": {"scale": 0.05023, "texture_path": "../../assets/textures/planetaJupiter.jpg", "orbit_radius": 8.482},
+          "saturn": {"scale": 0.04185, "texture_path": "../../assets/textures/planetaSaturno.jpg", "orbit_radius": 15.499},
+          "uranus": {"scale": 0.01822, "texture_path": "../../assets/textures/planetaUrano.jpg", "orbit_radius": 31.456},
+          "neptune": {"scale": 0.01767, "texture_path": "../../assets/textures/planetaNeptuno.jpg", "orbit_radius": 54.176}
         }
 
         for planet_name, data in planets_data.items():
@@ -225,7 +197,7 @@ class VertexShaderCameraDemo(BaseScene):
                 data["texture_path"]
             )
             self.planets[planet_name].orbit_radius = data["orbit_radius"]
-            self.planets[planet_name].scale = data["scale"]  # Set the scale
+            self.planets[planet_name].scale = data["scale"]
 
         # estrellas
         self.stars = ObjTextureMesh(
@@ -234,12 +206,11 @@ class VertexShaderCameraDemo(BaseScene):
             "../../assets/textures/estrellas.jpg"
         )
         # nave
-        #self.ship = ObjTextureMesh(
-            #self.program_id,
-            #"../../assets/models/Fighter_01.obj",
-
-            #"../../assets/textures/hull.jpg"
-        #)
+        self.ship = ObjTextureMesh(
+            self.program_id,
+            "../../assets/models/starDestroyer.obj",
+            "../../assets/textures/hull.jpg"
+        )
 
     def draw_planet(self, planet_name, transformation):
         self.planets[planet_name].draw(transformation)
@@ -253,55 +224,51 @@ class VertexShaderCameraDemo(BaseScene):
         self.valor += 0.0000  # Hacer que los planetas vayan más lentos
 
         # Calcular la posición del sol (ejemplo simplificado)
-        sun_position = np.array([0, 0, 0])  # Aquí puedes ajustar la posición real del sol si es necesario
+        sun_position = np.array([0, 0, 0])
 
         # Pasar la posición del sol al shader
         sun_pos_location = glGetUniformLocation(self.program_id, 'sunPosition')
         glUniform3f(sun_pos_location, *sun_position)
 
-        # Dibujar ejes mundiales y órbitas
+
         self.draw_world_axes()
 
         # Dibujar planetas
-        for planet_name, data in self.planets.items():
-            planet = self.planets[planet_name]
-            # Rotación sobre su propio eje
-            self.rotation_angles[planet_name] += self.rotation_speeds[planet_name]
-            self.rotation_angles[planet_name] %= 360  # Mantener el ángulo dentro de 0-360 grados
-
+        for planet_name, planet_data in self.planets.items():
             # Preparar la transformación inicial
             transformation = identity_mat()
 
             # Aplicar la traslación para mover el planeta a su posición orbital
-            orbit_radius = planet.orbit_radius
+            orbit_radius = planet_data.orbit_radius
             x = orbit_radius * np.cos(self.valor)
             y = 0
             z = orbit_radius * np.sin(self.valor)
             transformation = translate(transformation, x, y, z)
 
             # Aplicar la rotación sobre su propio eje
-            axial_angle = self.rotation_angles[planet_name]
-            transformation = rotate(transformation, axial_angle, 'y')  # Ajusta el eje si es necesario
+            self.rotation_angles[planet_name] += self.rotation_speeds[planet_name]
+            self.rotation_angles[planet_name] %= 360  # Mantener el ángulo dentro de 0-360 grados
+            axial_rotation_angle = self.rotation_angles[planet_name]
+            transformation = rotate(transformation, axial_rotation_angle, 'y')
 
-            # Escalar según el tamaño del planeta
-            planet_scale = planet.scale
+            # Aplicar la escala
+            scale_factor = planet_data.scale
+            transformation = scale(transformation, scale_factor, scale_factor, scale_factor)
 
-            # Dibuja estrellas
-            transformation_stars = identity_mat()
-            transformation_stars = scale(transformation_stars, 2500, 2500, 2500)
-            transformation_stars = translate(transformation_stars, 0, 0, 0)
-            self.stars.draw(transformation_stars)
+            # Dibuja el planeta con su transformación
+            self.draw_planet(planet_name, transformation)
 
-            # Dibuja nave
-            transformation_ship = identity_mat()
-            transformation_ship = scale(transformation_ship, 50, 50, 50)
-            transformation_ship = translate(transformation_ship, 0, 0, 0)
-            #self.ship.draw(transformation_ship)
+        # Dibuja estrellas
+        transformation_stars = identity_mat()
+        transformation_stars = scale(transformation_stars, 100, 100, 100)
+        transformation_stars = translate(transformation_stars, 0, 0, 0)
+        self.stars.draw(transformation_stars)
 
-            planet_transformation = scale(transformation, data.scale, data.scale, data.scale)
-            self.draw_planet(planet_name, planet_transformation)
-
-        glUseProgram(self.program_id)
+        # Dibuja nave
+        transformation_ship = identity_mat()
+        transformation_ship = translate(transformation_ship, 0, 0, 0)
+        transformation_ship = scale(transformation_ship, 0.001, 0.001, 0.001)
+        self.ship.draw(transformation_ship)
 
 
 if __name__ == '__main__':
