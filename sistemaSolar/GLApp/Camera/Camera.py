@@ -3,6 +3,7 @@ import pygame
 from math import *
 from OpenGL.GLU import *
 
+from sistemaSolar.GLApp.Camera.Character import Character
 from sistemaSolar.GLApp.Transformations.Transformations import identity_mat, rotate, translate
 from sistemaSolar.GLApp.Utils.Uniform import Uniform
 
@@ -26,13 +27,18 @@ class Camera:
         self.screen_width = width
         self.screen_height = height
         self.program_id = program_id
-        self.transformation = identity_mat()
         self.last_mouse = pygame.math.Vector2(0, 0)
         self.mouse_sensitivity = [0.02, 0.02]
         self.key_sensitivity = 0.005
         self.projection_matrix = perspective_mat(60, width / height, 0.01, 10000)
         self.projection = Uniform("mat4", self.projection_matrix)
         self.projection.find_variable(program_id, "projectionMatrix")
+        # Inicializa el personaje (nave)
+        self.transformation = identity_mat()
+        self.transformation = translate(self.transformation, 0, 0, 0)
+        self.character = Character(self.program_id, "../../assets/models/starDestroyer.obj", "../../assets/textures/destructor.jpg")
+
+
 
     def rotate(self, yaw, pitch):
         forward = pygame.Vector3(self.transformation[0, 2], self.transformation[1, 2], self.transformation[2, 2])
@@ -69,6 +75,8 @@ class Camera:
         lookat = Uniform("mat4", self.transformation)
         lookat.find_variable(self.program_id, "viewMatrix")
         lookat.load()
+        # Actualiza la posición del personaje (nave)
+        self.character.update_position(self.transformation)
 
     def get_projection_matrix(self):
         return self.projection_matrix
