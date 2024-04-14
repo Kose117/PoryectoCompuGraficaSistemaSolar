@@ -14,7 +14,6 @@ class BaseScene:
         info = pygame.display.Info()
         display = [info.current_w, info.current_h]
 
-
         # antialiasing
         pygame.display.gl_set_attribute(pygame.GL_MULTISAMPLEBUFFERS, 1)
         pygame.display.gl_set_attribute(pygame.GL_MULTISAMPLESAMPLES, 4)

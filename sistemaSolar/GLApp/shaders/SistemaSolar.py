@@ -1,5 +1,6 @@
 # Importaciones y configuración inicial
 import numpy as np
+import pygame
 from OpenGL.GL import *
 from sistemaSolar.GLApp.BaseApps.BaseScene import BaseScene
 from sistemaSolar.GLApp.Camera.Camera import Camera
@@ -7,6 +8,7 @@ from sistemaSolar.GLApp.Camera.Camera import Camera
 from sistemaSolar.GLApp.Mesh.Light.ObjTextureMesh import ObjTextureMesh
 from sistemaSolar.GLApp.Transformations.Transformations import identity_mat, scale, translate, rotate
 from sistemaSolar.GLApp.Utils.Utils import create_program
+from sistemaSolar.config import get_orbit_paused,set_orbit_paused
 
 # Actualización del shader para usar la posición del sol
 vertex_shader = r'''
@@ -94,6 +96,7 @@ class VertexShaderCameraDemo(BaseScene):
 
 
     def initialize(self):
+        pygame.init()
         self.program_id = create_program(vertex_shader, fragment_shader)
         self.initialize_planets()
         self.camera = Camera(self.program_id, self.screen.get_width(), self.screen.get_height())
@@ -342,13 +345,14 @@ class VertexShaderCameraDemo(BaseScene):
             self.draw_satellite(transformation, satellite)
 
     def draw_satellite(self, planet_transform, satellite):
-        rotation_angle = (self.valor * 360 / satellite.rotation_speeds_self) % 360
+        # La rotación del satélite debe ser independiente de si los planetas están pausados
+        rotation_angle = (pygame.time.get_ticks() * satellite.rotation_speeds_self) % 360
 
         x = satellite.orbit_radius * np.cos(np.radians(rotation_angle))
         z = satellite.orbit_radius * np.sin(np.radians(rotation_angle))
 
         transform = translate(identity_mat(), planet_transform[0][3] + x, planet_transform[1][3],
-                                   planet_transform[2][3] + z)
+                              planet_transform[2][3] + z)
         transform = rotate(transform, satellite.rotation_angles, 'y')
         transform = scale(transform, satellite.scale, satellite.scale, satellite.scale)
 
@@ -358,52 +362,46 @@ class VertexShaderCameraDemo(BaseScene):
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
         glUseProgram(self.program_id)
         self.camera.update()
-        self.valor += 0.00001  # Incremento muy pequeño para ralentizar el movimiento
+
+        if get_orbit_paused() == False:
+            self.valor += 0.00001  # Incrementar solo si no está pausada la rotación
+
         sun_position = np.array([0, 0, 0])
-        # Pasar la posición del sol al shader
         sun_pos_location = glGetUniformLocation(self.program_id, 'sunPosition')
         glUniform3f(sun_pos_location, *sun_position)
 
-        # Dibujar planetas
         for planet_name, planet_data in self.planets.items():
             orbit_radius = planet_data.orbit_radius
             orbital_speed = planet_data.rotation_speeds_sun
-            angular_speed = 0
-            # Calcular la posición orbital actual en función del tiempo
-            if planet_name != 'sun':
-                angular_speed = 2 * np.pi / orbital_speed  # Velocidad angular en radianes por segundo
+            angular_speed = 2 * np.pi / orbital_speed if orbital_speed != 0 else 0
 
-            max_angle = 2 * np.pi  # Un círculo completo
-            angular_position = (self.valor * angular_speed) % max_angle  # Ángulo actual en radianes
+            if get_orbit_paused() == False:
+                angular_position = (self.valor * angular_speed) % (2 * np.pi)
+            else:
+                angular_position = 0  # No cambiar la posición si está pausado
 
             x = orbit_radius * np.cos(angular_position)
             y = 0
             z = orbit_radius * np.sin(angular_position)
 
-            # Preparar la transformación inicial
             transformation = identity_mat()
             transformation = translate(transformation, x, y, z)
 
-            # Aplicar la rotación sobre su propio eje
-            # Ajustar la velocidad de rotación para que no aumente con el tiempo
-            planet_data.rotation_angles = (planet_data.rotation_angles + 0.1) % 360
-
+            if get_orbit_paused() == False:
+                planet_data.rotation_angles = (planet_data.rotation_angles + 0.1) % 360
             axial_rotation_angle = planet_data.rotation_angles
             transformation = rotate(transformation, axial_rotation_angle, 'y')
-            # Aplicar la escala
+
             scale_factor = planet_data.scale
             transformation = scale(transformation, scale_factor, scale_factor, scale_factor)
 
-            # Dibuja el planeta con su transformación
             self.draw_planet(planet_name, transformation)
 
         # Dibuja estrellas
         transformation_stars = identity_mat()
         transformation_stars = scale(transformation_stars, 100, 100, 100)
-        transformation_stars = translate(transformation_stars, 0, 0, 0)
         self.stars.draw(transformation_stars)
 
-        # Dibuja nave
 
 if __name__ == '__main__':
     VertexShaderCameraDemo().main_loop()

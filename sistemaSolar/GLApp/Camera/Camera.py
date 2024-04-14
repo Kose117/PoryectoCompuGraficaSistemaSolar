@@ -1,12 +1,12 @@
 import numpy as np
 import pygame
 from math import *
-from OpenGL.GLU import *
+
 
 from sistemaSolar.GLApp.Camera.Character import Character
 from sistemaSolar.GLApp.Transformations.Transformations import identity_mat, rotate, translate
 from sistemaSolar.GLApp.Utils.Uniform import Uniform
-
+from sistemaSolar.config import set_orbit_paused, orbit_paused
 
 def perspective_mat(angle_of_view, aspect_ratio, near_plane, far_plane):
     a = radians(angle_of_view)
@@ -70,6 +70,10 @@ class Camera:
         if keys[pygame.K_LSHIFT]:
             # Movimiento vertical hacia abajo
             self.transformation = translate(self.transformation, 0, -self.key_sensitivity, 0)
+        if keys[pygame.K_DOWN]:
+            set_orbit_paused()
+            print(f"Orbit paused: {orbit_paused}")
+
 
         self.projection.load()
         lookat = Uniform("mat4", self.transformation)
