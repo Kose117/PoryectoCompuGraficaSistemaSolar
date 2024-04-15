@@ -375,10 +375,10 @@ class VertexShaderCameraDemo(BaseScene):
             orbital_speed = planet_data.rotation_speeds_sun
             angular_speed = 2 * np.pi / orbital_speed if orbital_speed != 0 else 0
 
-            if get_orbit_paused() == False:
-                angular_position = (self.valor * angular_speed) % (2 * np.pi)
-            else:
-                angular_position = 0  # No cambiar la posición si está pausado
+            #if get_orbit_paused() == False:
+            angular_position = (self.valor * angular_speed) % (2 * np.pi)
+            # else:
+                #angular_position = 0  # No cambiar la posición si está pausado
 
             x = orbit_radius * np.cos(angular_position)
             y = 0
