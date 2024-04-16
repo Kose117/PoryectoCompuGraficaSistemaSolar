@@ -118,7 +118,7 @@ class VertexShaderCameraDemo(BaseScene):
                     {
                         "name": "moon",
                         "scale": 0.001,  # Scaled to be visible but proportionally smaller than Earth
-                        "texture_path": "../../assets/textures/sol.jpg",
+                        "texture_path": "../../assets/textures/meme.jpg",
                         "orbit_radius": 0.1,  # Adjusted for visibility
                         "rotation_speeds_self": 0.1,  # Realistic rotation period adjusted for simulation speed
                         "rotation_angles": 0
@@ -135,7 +135,7 @@ class VertexShaderCameraDemo(BaseScene):
                     {
                         "name": "phobos",
                         "scale": 0.00015,  # Adjusted for simulation
-                        "texture_path": "../../assets/textures/sol.jpg",
+                        "texture_path": "../../assets/textures/meme.jpg",
                         "orbit_radius": 0.009,  # Proportional to Mars
                         "rotation_speeds_self": 0.001,  # High speed for visibility
                         "rotation_angles": 0
@@ -143,7 +143,7 @@ class VertexShaderCameraDemo(BaseScene):
                     {
                         "name": "deimos",
                         "scale": 0.0001,  # Adjusted for simulation
-                        "texture_path": "../../assets/textures/sol.jpg",
+                        "texture_path": "../../assets/textures/meme.jpg",
                         "orbit_radius": 0.012,  # Proportional to Mars
                         "rotation_speeds_self": 0.01,  # High speed for visibility
                         "rotation_angles": 0
@@ -160,7 +160,7 @@ class VertexShaderCameraDemo(BaseScene):
                     {
                         "name": "io",
                         "scale": 0.0018*2,
-                        "texture_path": "../../assets/textures/sol.jpg",
+                        "texture_path": "../../assets/textures/meme.jpg",
                         "orbit_radius": 0.06,
                         "rotation_speeds_self": 0.04,
                         "rotation_angles": 0
@@ -168,7 +168,7 @@ class VertexShaderCameraDemo(BaseScene):
                     {
                         "name": "europa",
                         "scale": 0.0015*2,
-                        "texture_path": "../../assets/textures/sol.jpg",
+                        "texture_path": "../../assets/textures/meme.jpg",
                         "orbit_radius": 0.07,
                         "rotation_speeds_self": 0.08,
                         "rotation_angles": 0
@@ -176,7 +176,7 @@ class VertexShaderCameraDemo(BaseScene):
                     {
                         "name": "ganymede",
                         "scale": 0.002*2,
-                        "texture_path": "../../assets/textures/sol.jpg",
+                        "texture_path": "../../assets/textures/meme.jpg",
                         "orbit_radius": 0.09,
                         "rotation_speeds_self": 0.01,
                         "rotation_angles": 0
@@ -184,7 +184,7 @@ class VertexShaderCameraDemo(BaseScene):
                     {
                         "name": "callisto",
                         "scale": 0.0019*2,
-                        "texture_path": "../../assets/textures/sol.jpg",
+                        "texture_path": "../../assets/textures/meme.jpg",
                         "orbit_radius": 0.18,
                         "rotation_speeds_self": 0.04,
                         "rotation_angles": 0
@@ -192,7 +192,7 @@ class VertexShaderCameraDemo(BaseScene):
                     {
                         "name": "amalthea",
                         "scale": 0.0005*2,
-                        "texture_path": "../../assets/textures/sol.jpg",
+                        "texture_path": "../../assets/textures/meme.jpg",
                         "orbit_radius": 0.1,
                         "rotation_speeds_self": 0.011,
                         "rotation_angles": 0
@@ -200,7 +200,7 @@ class VertexShaderCameraDemo(BaseScene):
                     {
                         "name": "himalia",
                         "scale": 0.0007*2,
-                        "texture_path": "../../assets/textures/sol.jpg",
+                        "texture_path": "../../assets/textures/meme.jpg",
                         "orbit_radius": 0.08,
                         "rotation_speeds_self": 0.25,
                         "rotation_angles": 0
@@ -217,7 +217,7 @@ class VertexShaderCameraDemo(BaseScene):
                     {
                         "name": "titan",
                         "scale": 0.0017*2,
-                        "texture_path": "../../assets/textures/sol.jpg",
+                        "texture_path": "../../assets/textures/meme.jpg",
                         "orbit_radius": 0.8,
                         "rotation_speeds_self": 0.38,
                         "rotation_angles": 0
@@ -225,7 +225,7 @@ class VertexShaderCameraDemo(BaseScene):
                     {
                         "name": "rhea",
                         "scale": 0.0008*2,
-                        "texture_path": "../../assets/textures/sol.jpg",
+                        "texture_path": "../../assets/textures/meme.jpg",
                         "orbit_radius": 0.3,
                         "rotation_speeds_self": 0.1,
                         "rotation_angles": 0
@@ -233,7 +233,7 @@ class VertexShaderCameraDemo(BaseScene):
                     {
                         "name": "iapetus",
                         "scale": 0.0007*2,
-                        "texture_path": "../../assets/textures/sol.jpg",
+                        "texture_path": "../../assets/textures/meme.jpg",
                         "orbit_radius": 0.2,
                         "rotation_speeds_self": 0.19,
                         "rotation_angles": 0
@@ -241,7 +241,7 @@ class VertexShaderCameraDemo(BaseScene):
                     {
                         "name": "dione",
                         "scale": 0.0006*2,
-                        "texture_path": "../../assets/textures/sol.jpg",
+                        "texture_path": "../../assets/textures/meme.jpg",
                         "orbit_radius": 0.28,
                         "rotation_speeds_self": 0.65,
                         "rotation_angles": 0
@@ -249,7 +249,7 @@ class VertexShaderCameraDemo(BaseScene):
                     {
                         "name": "tethys",
                         "scale": 0.0005*2,
-                        "texture_path": "../../assets/textures/sol.jpg",
+                        "texture_path": "../../assets/textures/meme.jpg",
                         "orbit_radius": 0.19,
                         "rotation_speeds_self": 0.45,
                         "rotation_angles": 0
@@ -257,7 +257,7 @@ class VertexShaderCameraDemo(BaseScene):
                     {
                         "name": "enceladus",
                         "scale": 0.0003*2,
-                        "texture_path": "../../assets/textures/sol.jpg",
+                        "texture_path": "../../assets/textures/meme.jpg",
                         "orbit_radius": 0.13,
                         "rotation_speeds_self": 0.32,
                         "rotation_angles": 0
@@ -271,17 +271,17 @@ class VertexShaderCameraDemo(BaseScene):
                 "orbit_radius": 31.456, "rotation_speeds_self": 1.3954, "rotation_angles": 0,
                 "rotation_speeds_sun": 84.0109,
                 "satellites": [
-                    {"name": "titania", "scale": 0.002, "texture_path": "../../assets/textures/sol.jpg",
+                    {"name": "titania", "scale": 0.002, "texture_path": "../../assets/textures/meme.jpg",
                      "orbit_radius": 0.08, "rotation_speeds_self": 0.28, "rotation_angles": 0},
-                    {"name": "oberon", "scale": 0.0025, "texture_path": "../../assets/textures/sol.jpg",
+                    {"name": "oberon", "scale": 0.0025, "texture_path": "../../assets/textures/meme.jpg",
                      "orbit_radius": 0.1, "rotation_speeds_self": 0.323, "rotation_angles": 0},
-                    {"name": "umbriel", "scale": 0.002, "texture_path": "../../assets/textures/sol.jpg",
+                    {"name": "umbriel", "scale": 0.002, "texture_path": "../../assets/textures/meme.jpg",
                      "orbit_radius": 0.2, "rotation_speeds_self": 0.9, "rotation_angles": 0},
-                    {"name": "ariel", "scale": 0.0015, "texture_path": "../../assets/textures/sol.jpg",
+                    {"name": "ariel", "scale": 0.0015, "texture_path": "../../assets/textures/meme.jpg",
                      "orbit_radius": 0.3, "rotation_speeds_self": 0.6, "rotation_angles": 0},
-                    {"name": "miranda", "scale": 0.002, "texture_path": "../../assets/textures/sol.jpg",
+                    {"name": "miranda", "scale": 0.002, "texture_path": "../../assets/textures/meme.jpg",
                      "orbit_radius": 0.4, "rotation_speeds_self": 0.34, "rotation_angles": 0},
-                    {"name": "puck", "scale": 0.003, "texture_path": "../../assets/textures/sol.jpg",
+                    {"name": "puck", "scale": 0.003, "texture_path": "../../assets/textures/meme.jpg",
                      "orbit_radius": 0.5, "rotation_speeds_self": 0.18, "rotation_angles": 0}
                 ]
             },
@@ -292,17 +292,17 @@ class VertexShaderCameraDemo(BaseScene):
                 "orbit_radius": 54.176, "rotation_speeds_self": 1.4906, "rotation_angles": 0,
                 "rotation_speeds_sun": 90.411,
                 "satellites": [
-                    {"name": "triton", "scale": 0.003, "texture_path": "../../assets/textures/sol.jpg",
+                    {"name": "triton", "scale": 0.003, "texture_path": "../../assets/textures/meme.jpg",
                      "orbit_radius": 0.25, "rotation_speeds_self": -0.14, "rotation_angles": 0},
-                    {"name": "proteus", "scale": 0.004, "texture_path": "../../assets/textures/sol.jpg",
+                    {"name": "proteus", "scale": 0.004, "texture_path": "../../assets/textures/meme.jpg",
                      "orbit_radius": 0.3, "rotation_speeds_self": 0.25, "rotation_angles": 0},
-                    {"name": "nereid", "scale": 0.0045, "texture_path": "../../assets/textures/sol.jpg",
+                    {"name": "nereid", "scale": 0.0045, "texture_path": "../../assets/textures/meme.jpg",
                      "orbit_radius": 0.35, "rotation_speeds_self": 0.36, "rotation_angles": 0},
-                    {"name": "larissa", "scale": 0.003, "texture_path": "../../assets/textures/sol.jpg",
+                    {"name": "larissa", "scale": 0.003, "texture_path": "../../assets/textures/meme.jpg",
                      "orbit_radius": 0.4, "rotation_speeds_self": 0.13, "rotation_angles": 0},
-                    {"name": "galatea", "scale": 0.005, "texture_path": "../../assets/textures/sol.jpg",
+                    {"name": "galatea", "scale": 0.005, "texture_path": "../../assets/textures/meme.jpg",
                      "orbit_radius": 0.45, "rotation_speeds_self": 0.1, "rotation_angles": 0},
-                    {"name": "despina", "scale": 0.004, "texture_path": "../../assets/textures/sol.jpg",
+                    {"name": "despina", "scale": 0.004, "texture_path": "../../assets/textures/meme.jpg",
                      "orbit_radius": 0.5, "rotation_speeds_self": 0.8, "rotation_angles": 0}
                 ]
             }
